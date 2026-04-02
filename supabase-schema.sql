@@ -1,6 +1,6 @@
 -- ============================================================
 -- ROXY ENCINITAS — MISSED CONNECTIONS
--- Supabase Schema
+-- Supabase Schema v2
 -- Run this in your Supabase SQL editor
 -- ============================================================
 
@@ -22,6 +22,8 @@ create table if not exists public.connections (
   -- Guest fields (used when profile_id is null)
   guest_name text,
   guest_email text,
+  -- Avatar (emoji picked during post)
+  avatar_emoji text default '🌊',
   -- Post content
   night text not null,
   night_key text not null check (night_key in ('fri','sat','sun','thurs','other')),
@@ -94,49 +96,16 @@ end;
 $$;
 
 -- ============================================================
--- SEED DATA (optional — comment out in production)
+-- SEED DATA
+-- Run once to populate the wall — safe to skip if already inserted
 -- ============================================================
 
 insert into public.connections
-  (guest_name, night, night_key, vibe, message, contact, hearts)
+  (guest_name, avatar_emoji, night, night_key, vibe, message, contact, hearts)
 values
-  (
-    'Tall Guy by the Jukebox',
-    'Last Saturday', 'sat',
-    'Eye contact across the bar',
-    'You had a laugh that made the whole room turn around. You were with two friends, I was pretending to look at the menu. I was not looking at the menu.',
-    '@tallguyroxy',
-    34
-  ),
-  (
-    'Mezcal Girl, Green Jacket',
-    'Last Friday', 'fri',
-    'Talked for an hour, then lost you',
-    'We talked about your road trip to Baja for like 45 minutes and I never got your name. You left while I was in the bathroom. Classic me. If this is you, I owe you a drink.',
-    'DM @mezcalgirl_encinitas',
-    61
-  ),
-  (
-    'The Door Holder',
-    'Some Tuesday', 'other',
-    'You held the door, I panicked',
-    'You held the door and said "after you" and I said "no after you" and then we both stood there for four seconds that felt like a year. I think about this constantly.',
-    'Ask the bartender',
-    129
-  ),
-  (
-    'Sunday Wine Person',
-    'Last Sunday', 'sun',
-    'Dance floor adjacent situation',
-    'You were sipping something red, swaying slightly, completely unbothered. The song was bad and you were vibing harder than anyone there. I respect it. I respect you. Reach out.',
-    '@sundayroseperson',
-    47
-  ),
-  (
-    'Bearded Guy, Back Booth',
-    'Last Friday', 'fri',
-    'Shared a barstool (accidentally)',
-    'We literally sat on the same barstool for a second because the bar was packed and neither of us noticed and then we both did at the same time. You were very gracious about it.',
-    'Venmo @beardedguy for emotional damages',
-    88
-  );
+  ('Tall Guy by the Jukebox','🎵','Last Saturday','sat','Eye contact across the bar','You had a laugh that made the whole room turn around. You were with two friends, I was pretending to look at the menu. I was not looking at the menu.','@tallguyroxy',34),
+  ('Mezcal Girl, Green Jacket','🌺','Last Friday','fri','Talked for an hour, then lost you','We talked about your road trip to Baja for like 45 minutes and I never got your name. You left while I was in the bathroom. Classic me. If this is you, I owe you a drink.','DM @mezcalgirl_encinitas',61),
+  ('The Door Holder','🌙','Some Tuesday','other','You held the door, I panicked','You held the door and said "after you" and I said "no after you" and then we both stood there for four seconds that felt like a year. I think about this constantly.','Ask the bartender',129),
+  ('Sunday Wine Person','🍹','Last Sunday','sun','Dance floor adjacent situation','You were sipping something red, swaying slightly, completely unbothered. The song was bad and you were vibing harder than anyone there. I respect it. I respect you. Reach out.','@sundayroseperson',47),
+  ('Bearded Guy, Back Booth','🎸','Last Friday','fri','We shared a barstool accidentally','We literally sat on the same barstool because the bar was packed and neither of us noticed, and then we both did at the same time. You were very gracious about it. I was not.','Venmo @beardedguy for emotional damages',88)
+on conflict do nothing;

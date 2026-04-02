@@ -157,8 +157,6 @@ input,textarea{cursor:text}
 .gb-cta{font-size:12px;color:var(--gold);font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .est-badge{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(212,160,80,.5);margin-top:4px;display:block}
 </style>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -337,25 +335,10 @@ input,textarea{cursor:text}
 <div class="toast" id="toast"></div>
 
 <script>
-// ── SUPABASE CONFIG ──────────────────────────────────────────────
-const SUPABASE_URL = 'https://htukrlhrzacgtivmwiic.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_3cw34CfAWqbiEe71FxT25g_nTs8EWTZ';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ── CONSTANTS ────────────────────────────────────────────────────
 const EMOJIS=['🌊','🎵','🍋','🌙','🎤','🪩','🐚','✨','🌺','🎸','🍹','🔥','🪴','💫','🦋','🌴'];
-const STORE_KEY='roxy_mc_v4';
-const HEARTS_KEY='roxy_hearts_v4';
-const SESSION_KEY='roxy_session';
+const STORE_KEY='roxy_mc_v3';
+const HEARTS_KEY='roxy_hearts_v3';
 
-// ── SESSION ID (heart deduplication) ────────────────────────────
-let SESSION_ID = localStorage.getItem(SESSION_KEY);
-if (!SESSION_ID) {
-  SESSION_ID = 'sess_'+Math.random().toString(36).substr(2,9)+'_'+Date.now();
-  localStorage.setItem(SESSION_KEY, SESSION_ID);
-}
-
-// ── SEED DATA (always shown below real posts) ────────────────────
 const SEED=[
  {id:'seed1',name:'Tall Guy by the Jukebox',avatar:'🎵',night:'Last Saturday',nk:'sat',vibe:'Eye contact across the bar',msg:'You had a laugh that made the whole room turn around. You were with two friends, I was pretending to look at the menu. I was not looking at the menu.',contact:'@tallguyroxy',hearts:34,ts:Date.now()-86400000*3},
  {id:'seed2',name:'Mezcal Girl, Green Jacket',avatar:'🌺',night:'Last Friday',nk:'fri',vibe:'Talked for an hour, then lost you',msg:'We talked about your road trip to Baja for like 45 minutes and I never got your name. You left while I was in the bathroom. Classic me. If this is you, I owe you a drink.',contact:'DM @mezcalgirl_encinitas',hearts:61,ts:Date.now()-86400000*2},
@@ -370,16 +353,13 @@ const WINS=[
  {name:'Lena found her hiking buddy',msg:"Not romantic — she just needed someone to go to Torrey Pines with and found her person. Both outcomes valid at Roxy.",night:'Last March',emoji:'🌄',hearts:117},
 ];
 
-// ── LOCAL STATE ──────────────────────────────────────────────────
-let state=JSON.parse(localStorage.getItem(STORE_KEY)||'null')||{user:null,visited:false,myPostIds:[]};
-if (!state.myPostIds) state.myPostIds = [];
+let state=JSON.parse(localStorage.getItem(STORE_KEY)||'null')||{posts:[],user:null,visited:false};
 let hearted=JSON.parse(localStorage.getItem(HEARTS_KEY)||'[]');
 let selNight=null,selNK=null,selVibe=null,curFilter='all';
 
 function save(){localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function saveH(){localStorage.setItem(HEARTS_KEY,JSON.stringify(hearted))}
 
-// ── EMOJI GRID ───────────────────────────────────────────────────
 function buildEgrid(){
  const g=document.getElementById('egrid');
  g.innerHTML=EMOJIS.map((e,i)=>`<button class="eopt${i===0?' on':''}" onclick="selEmoji(this)">${e}</button>`).join('');
@@ -388,7 +368,6 @@ buildEgrid();
 function selEmoji(b){document.querySelectorAll('.eopt').forEach(x=>x.classList.remove('on'));b.classList.add('on')}
 function getEmoji(){return(document.querySelector('.eopt.on')||{textContent:'🌊'}).textContent}
 
-// ── AUTH ─────────────────────────────────────────────────────────
 function openAuth(){document.getElementById('ov').classList.add('on')}
 function closeAuth(){document.getElementById('ov').classList.remove('on')}
 function goStep(id){['s-choose','s-profile','s-guest','s-success'].forEach(s=>document.getElementById(s).classList.remove('on'));document.getElementById(id).classList.add('on');document.getElementById('mclose').style.display=id==='s-success'?'none':'flex'}
@@ -426,7 +405,6 @@ function updateGuestBanner(){
  document.getElementById('gbanner').style.display=(state.guest&&!state.user)?'flex':'none';
 }
 
-// ── TAB SWITCHING ─────────────────────────────────────────────────
 function switchTab(name){
  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));
@@ -437,123 +415,55 @@ function switchTab(name){
  if(name==='profile')renderProfile();
 }
 
-// ── NORMALIZE Supabase row → app card format ──────────────────────
-function normalizePost(p){
- return {
-  id: p.id,
-  name: p.guest_name || 'Anonymous',
-  avatar: p.avatar_emoji || EMOJIS[Math.floor(Math.random()*EMOJIS.length)],
-  night: p.night,
-  nk: p.night_key,
-  vibe: p.vibe,
-  msg: p.message,
-  contact: p.contact,
-  hearts: p.hearts || 0,
-  ts: new Date(p.created_at).getTime()
- };
-}
+function allPosts(){return[...[...state.posts].reverse(),...SEED]}
 
-// ── RENDER BROWSE (async, Supabase-backed) ────────────────────────
-async function renderBrowse(filter){
- curFilter=filter||'all';
+function renderBrowse(filter){
+ const posts=allPosts().filter(p=>filter==='all'||p.nk===filter);
  const el=document.getElementById('browse-list');
- el.innerHTML='<div class="empty"><div class="empty-icon">🌊</div><div class="empty-title">Loading connections...</div></div>';
-
- try {
-  let query=sb.from('connections').select('*').eq('is_approved',true).order('created_at',{ascending:false});
-  if(curFilter!=='all') query=query.eq('night_key',curFilter);
-  const {data,error}=await query;
-  if(error) throw error;
-
-  // Sync hearted state from Supabase for this session
-  const {data:hData}=await sb.from('hearts').select('connection_id').eq('session_id',SESSION_ID);
-  if(hData) { hearted=[...new Set([...hearted,...hData.map(h=>h.connection_id)])]; saveH(); }
-
-  const dbPosts=(data||[]).map(normalizePost);
-  const seedToShow=SEED.filter(s=>curFilter==='all'||s.nk===curFilter);
-  const allPosts=[...dbPosts,...seedToShow];
-
-  document.getElementById('stat-ct').textContent=(data?data.length:0)+SEED.length;
-
-  if(!allPosts.length){
-   el.innerHTML='<div class="empty"><div class="empty-icon">🌊</div><div class="empty-title">No connections for this night yet</div><div class="empty-sub">Be the first to post — someone\'s definitely looking for you.</div></div>';
-   return;
-  }
-  el.innerHTML=allPosts.map(renderCard).join('');
- } catch(err){
-  console.error('Browse error:',err);
-  const seedToShow=SEED.filter(s=>curFilter==='all'||s.nk===curFilter);
-  document.getElementById('stat-ct').textContent=SEED.length;
-  el.innerHTML=seedToShow.map(renderCard).join('');
- }
+ document.getElementById('stat-ct').textContent=allPosts().length;
+ if(!posts.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🌊</div><div class="empty-title">No connections for this night yet</div><div class="empty-sub">Be the first to post — someone's definitely looking for you.</div></div>`;return;}
+ el.innerHTML=posts.map(renderCard).join('');
 }
 
-// ── RENDER CARD ───────────────────────────────────────────────────
 function renderCard(p){
  const isNew=(Date.now()-p.ts)<86400000*2;
  const h=hearted.includes(p.id);
- const contactEsc=p.contact?esc(p.contact):'';
  return`<div class="cc" id="cc-${p.id}">
   <div class="cch"><div class="cav">${p.avatar||'🌊'}</div>
   <div style="flex:1"><div class="cnm">${esc(p.name)}${isNew?'<span class="cnew">New</span>':''}</div><div class="cni">${esc(p.night)} · ${esc(p.vibe)}</div></div></div>
   <div class="cbody">"${esc(p.msg)}"</div>
-  <div class="cchips"><span class="chip">📍 The Roxy</span>${p.contact?`<span class="chip">📬 ${contactEsc}</span>`:''}</div>
+  <div class="cchips"><span class="chip">📍 The Roxy</span>${p.contact?`<span class="chip">📬 ${esc(p.contact)}</span>`:''}</div>
   <div class="cact">
    <button class="cbtn heart${h?' hearted':''}" id="hb-${p.id}" onclick="heartPost('${p.id}')">${h?'♥':'♡'} ${p.hearts}</button>
    <button class="cbtn ghost" onclick="sharePost()">Share</button>
-   <button class="cbtn ghost" onclick="itsMe('${contactEsc}')">It's Me</button>
+   <button class="cbtn ghost" onclick="itsMe()">It's Me</button>
   </div></div>`;
 }
 
-// ── FILTER ────────────────────────────────────────────────────────
 function filterN(btn,key){
  document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));btn.classList.add('on');curFilter=key;renderBrowse(key);
 }
 
-// ── HEART POST (async, Supabase RPC) ─────────────────────────────
-async function heartPost(id){
+function heartPost(id){
  if(hearted.includes(id)){showToast('Already hearted — we see you');return}
  hearted.push(id);saveH();
-
+ const idx=state.posts.findIndex(p=>p.id===id);if(idx>-1){state.posts[idx].hearts++;save()}
+ const s=SEED.find(p=>p.id===id);if(s)s.hearts++;
  const btn=document.getElementById('hb-'+id);
  if(btn){const cur=parseInt(btn.textContent.replace(/\D/g,''))||0;btn.textContent='♥ '+(cur+1);btn.classList.add('hearted');}
-
- const isSeed=SEED.some(s=>s.id===id);
- if(isSeed){const s=SEED.find(p=>p.id===id);if(s)s.hearts++;showToast('Hearted — sending good vibes 🌊');return;}
-
- const {error}=await sb.rpc('increment_hearts',{conn_id:id,sid:SESSION_ID});
- if(error){
-  console.error('Heart error:',error);
-  hearted.splice(hearted.indexOf(id),1);saveH();
-  if(btn){const cur=parseInt(btn.textContent.replace(/\D/g,''))||0;btn.textContent='♡ '+(cur-1);btn.classList.remove('hearted');}
-  showToast('Could not heart — try again');
- } else {
-  showToast('Hearted — sending good vibes 🌊');
- }
+ showToast('Hearted — sending good vibes 🌊');
 }
 
-// ── SHARE ─────────────────────────────────────────────────────────
 function sharePost(){
  if(navigator.share){navigator.share({title:'The Roxy — Missed Connections',url:window.location.href}).catch(()=>{})}
  else{navigator.clipboard.writeText(window.location.href).then(()=>showToast('Link copied — send it their way')).catch(()=>showToast('Copy the URL and share!'));}
 }
+function itsMe(){showToast("We're rooting for you — go say hi! 🌊")}
 
-// ── IT'S ME (enhanced with contact copy) ─────────────────────────
-function itsMe(contact){
- if(contact){
-  showToast('Reach out: '+contact+' 🌊');
-  if(navigator.clipboard) navigator.clipboard.writeText(contact).catch(()=>{});
- } else {
-  showToast("We're rooting for you — go say hi! 🌊");
- }
-}
-
-// ── NIGHT / VIBE SELECTORS ────────────────────────────────────────
 function selN(btn,label,key){document.querySelectorAll('.ntag').forEach(t=>t.classList.remove('on'));btn.classList.add('on');selNight=label;selNK=key;document.getElementById('f-night-err').classList.remove('on');}
 function selV(btn){document.querySelectorAll('.vbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');selVibe=btn.textContent;document.getElementById('f-vibe-err').classList.remove('on');}
 
-// ── SUBMIT POST (async, writes to Supabase) ───────────────────────
-async function submitPost(){
+function submitPost(){
  const name=document.getElementById('f-name').value.trim();
  const msg=document.getElementById('f-msg').value.trim();
  const contact=document.getElementById('f-contact').value.trim();
@@ -563,45 +473,18 @@ async function submitPost(){
  if(!selVibe){document.getElementById('f-vibe-err').classList.add('on');ok=false}
  if(!msg){document.getElementById('f-msg-err').classList.add('on');ok=false}else document.getElementById('f-msg-err').classList.remove('on');
  if(!ok)return;
-
  const btn=document.getElementById('sub-btn');btn.disabled=true;btn.innerHTML='<span class="spin"></span>';
- const avatar=state.user?state.user.avatar:EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
-
- const {data,error}=await sb.from('connections').insert({
-  guest_name:name,
-  night:selNight,
-  night_key:selNK,
-  vibe:selVibe,
-  message:msg,
-  contact:contact||null,
-  avatar_emoji:avatar
- }).select().single();
-
+ const post={id:'p_'+Date.now(),name,avatar:state.user?state.user.avatar:EMOJIS[Math.floor(Math.random()*EMOJIS.length)],night:selNight,nk:selNK,vibe:selVibe,msg,contact:contact||null,hearts:0,ts:Date.now()};
+ state.posts.push(post);save();
  btn.disabled=false;btn.textContent='Post My Missed Connection';
-
- if(error){
-  console.error('Post error:',error);
-  showToast('Error posting — try again');
-  return;
- }
-
- // Track this post in local state
- if(data && data.id){state.myPostIds.push(data.id);save();}
-
- document.getElementById('f-name').value='';
- document.getElementById('f-msg').value='';
- document.getElementById('f-contact').value='';
+ document.getElementById('f-name').value='';document.getElementById('f-msg').value='';document.getElementById('f-contact').value='';
  document.querySelectorAll('.ntag,.vbtn').forEach(b=>b.classList.remove('on'));
  selNight=null;selNK=null;selVibe=null;
-
  showToast('Posted! The universe is working on it 🌊');
- switchTab('browse');
- await renderBrowse('all');
- document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));
- document.querySelector('.fc').classList.add('on');
+ switchTab('browse');renderBrowse('all');
+ document.querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));document.querySelector('.fc').classList.add('on');
 }
 
-// ── WINS ──────────────────────────────────────────────────────────
 document.getElementById('wins-list').innerHTML=WINS.map(w=>`
  <div class="cc"><div class="cch"><div class="cav">${w.emoji}</div>
  <div style="flex:1"><div class="cnm">${w.name}</div><div class="cni">${w.night}</div></div>
@@ -610,19 +493,9 @@ document.getElementById('wins-list').innerHTML=WINS.map(w=>`
  <div class="cact"><div style="font-size:12px;color:var(--txt3)">♥ ${w.hearts} people love this</div></div></div>
 `).join('');
 
-// ── PROFILE ───────────────────────────────────────────────────────
-async function renderProfile(){
- if(!state.user){
-  document.getElementById('prof-content').innerHTML='<div class="empty"><div class="empty-icon">🌊</div><div class="empty-title">No profile yet</div><div class="empty-sub">Create one to track your posts.</div></div>';
-  return;
- }
- let myPosts=[];
- if(state.myPostIds&&state.myPostIds.length>0){
-  try{
-   const {data}=await sb.from('connections').select('*').in('id',state.myPostIds).order('created_at',{ascending:false});
-   myPosts=(data||[]).map(normalizePost);
-  }catch(e){console.error(e);}
- }
+function renderProfile(){
+ if(!state.user){document.getElementById('prof-content').innerHTML='<div class="empty"><div class="empty-icon">🌊</div><div class="empty-title">No profile yet</div><div class="empty-sub">Create one to track your posts.</div></div>';return}
+ const myPosts=state.posts.filter(p=>p.name===state.user.name);
  document.getElementById('prof-content').innerHTML=`
   <div class="pcard"><div class="pbig">${state.user.avatar}</div>
   <div class="pname">${esc(state.user.name)}</div>
@@ -631,19 +504,17 @@ async function renderProfile(){
    <div class="pstat"><div class="psn">${myPosts.length}</div><div class="psl">Posts</div></div>
    <div class="pstat"><div class="psn">${myPosts.reduce((a,p)=>a+p.hearts,0)}</div><div class="psl">Hearts</div></div>
   </div>
-  ${myPosts.length?`<div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--txt);margin-bottom:12px">Your posts</div><div class="clist">${myPosts.map(renderCard).join('')}</div>`
+  ${myPosts.length?`<div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--txt);margin-bottom:12px">Your posts</div><div class="clist">${[...myPosts].reverse().map(renderCard).join('')}</div>`
   :'<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No posts yet</div><div class="empty-sub">Head to Post Yours and tell your story.</div></div>'}
   <div style="margin-top:20px"><button class="bghost" onclick="signOut()">Sign Out</button></div>`;
 }
 
 function signOut(){state.user=null;state.guest=null;save();document.getElementById('upill').style.display='none';document.getElementById('ptab').style.display='none';switchTab('browse');showToast('Signed out. Come back soon.');}
 
-// ── TOAST & UTILS ─────────────────────────────────────────────────
 let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3400);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
-// ── INIT ──────────────────────────────────────────────────────────
 if(state.user)showUserUI();
 updateGuestBanner();
 renderBrowse('all');
