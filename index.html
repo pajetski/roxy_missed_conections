@@ -336,15 +336,14 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
   pointer-events:none;
 }
 .lounge-logo-mark{
-  width:56px;height:56px;
-  background:rgba(200,164,90,0.1);
-  border:1px solid rgba(200,164,90,0.35);
-  border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
+  width:80px;height:80px;
+  border-radius:50%;
+  overflow:hidden;
   margin:0 auto 1.25rem;
   position:relative;z-index:1;
+  box-shadow:0 0 32px rgba(200,164,90,0.35);
 }
-.lounge-logo-mark svg{width:28px;height:28px;fill:var(--gold)}
+.lounge-logo-mark img{width:100%;height:100%;object-fit:cover;display:block;}
 .lounge-hero-venue{
   font-size:0.62rem;text-transform:uppercase;letter-spacing:0.22em;
   color:var(--gold);font-weight:600;margin-bottom:0.4rem;
@@ -463,18 +462,20 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
   background:radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,164,90,0.08) 0%, transparent 70%);
 }
 .auth-logo{
-  display:flex;align-items:center;justify-content:center;
-  gap:0.6rem;margin-bottom:1.75rem;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0.9rem;margin-bottom:1.75rem;
 }
-.auth-logo-mark{
-  width:44px;height:44px;background:var(--gold-dim);
-  border:1px solid rgba(200,164,90,0.3);border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
+.auth-gramophone{
+  width:90px;height:90px;border-radius:50%;
+  object-fit:cover;
+  box-shadow:0 0 24px rgba(200,164,90,0.25);
 }
-.auth-logo-mark svg{width:22px;height:22px;fill:var(--gold)}
-.auth-logo-text{text-align:left;line-height:1.1}
-.auth-logo-text .venue{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-3);font-weight:600}
-.auth-logo-text .name{font-family:var(--font-display);font-size:1.25rem;color:var(--text-1)}
+.auth-wordmark{
+  width:160px;object-fit:contain;
+  filter:brightness(1.05);
+}
+.auth-logo-text{text-align:center;line-height:1.1}
+.auth-logo-text .name{font-family:var(--font-display);font-size:1.15rem;color:var(--text-2);font-style:italic}
 .auth-tagline{font-family:var(--font-display);font-style:italic;color:var(--text-2);font-size:1rem;margin-top:0.5rem}
 .auth-form-wrap{
   flex:1;padding:1.5rem;
@@ -744,11 +745,9 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
 <div id="auth-page" class="page active">
   <div class="auth-hero">
     <div class="auth-logo">
-      <div class="auth-logo-mark">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
-      </div>
+      <img src="assets/gramophone-gold.png" alt="The Roxy" class="auth-gramophone">
+      <img src="assets/Roxy-logo-white.png" alt="The Roxy Encinitas" class="auth-wordmark">
       <div class="auth-logo-text">
-        <div class="venue">The Roxy Encinitas</div>
         <div class="name">Missed Connections</div>
       </div>
     </div>
@@ -934,7 +933,7 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
     <div class="lounge-hero">
       <div class="lounge-hero-glow"></div>
       <div class="lounge-logo-mark">
-        <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        <img src="assets/gramophone-gold.png" alt="The Roxy">
       </div>
       <div class="lounge-hero-venue">The Roxy Encinitas</div>
       <div class="lounge-hero-title">The Lounge</div>
