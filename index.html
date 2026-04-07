@@ -308,14 +308,13 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
 }
 .lounge-hero{
   position:relative;
-  min-height:52vw;max-height:340px;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
-  padding:2rem 1.5rem 2.5rem;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:1.25rem 1.5rem 1.5rem;
   overflow:hidden;
   text-align:center;
+  border-bottom:1px solid var(--border);
   background:
     radial-gradient(ellipse 120% 80% at 50% 0%, rgba(200,164,90,0.13) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 20% 100%, rgba(200,164,90,0.07) 0%, transparent 60%),
     linear-gradient(180deg, #0d0b09 0%, #0b0a08 100%);
 }
 .lounge-hero::before{
@@ -347,36 +346,36 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
   pointer-events:none;
 }
 .lounge-logo-mark{
-  width:80px;height:80px;
+  width:54px;height:54px;
   border-radius:50%;
   overflow:hidden;
-  margin:0 auto 1.25rem;
+  margin:0 auto 0.75rem;
   position:relative;z-index:1;
-  box-shadow:0 0 32px rgba(200,164,90,0.35);
+  box-shadow:0 0 20px rgba(200,164,90,0.3);
 }
 .lounge-logo-mark img{width:100%;height:100%;object-fit:cover;display:block;}
 .lounge-hero-venue{
-  font-size:0.62rem;text-transform:uppercase;letter-spacing:0.22em;
-  color:var(--gold);font-weight:600;margin-bottom:0.4rem;
+  font-size:0.6rem;text-transform:uppercase;letter-spacing:0.22em;
+  color:var(--gold);font-weight:600;margin-bottom:0.2rem;
   position:relative;z-index:1;
 }
 .lounge-hero-title{
-  font-family:var(--font-display);font-size:clamp(1.8rem,7vw,2.8rem);
+  font-family:var(--font-display);font-size:clamp(1.4rem,5vw,2rem);
   line-height:1.1;letter-spacing:-0.01em;color:var(--text-1);
   position:relative;z-index:1;
 }
 .lounge-hero-sub{
   font-family:var(--font-display);font-style:italic;
-  color:var(--text-2);font-size:0.95rem;margin-top:0.5rem;
+  color:var(--text-2);font-size:0.85rem;margin-top:0.35rem;
   position:relative;z-index:1;
 }
 .lounge-status-bar{
   display:flex;align-items:center;justify-content:center;gap:0.4rem;
-  margin-top:1.25rem;
+  margin-top:0.75rem;
   position:relative;z-index:1;
 }
 .lounge-status-dot{
-  width:7px;height:7px;border-radius:50%;
+  width:6px;height:6px;border-radius:50%;
   background:var(--green);
   box-shadow:0 0 6px var(--green);
   animation:pulse-dot 2s ease-in-out infinite;
@@ -385,8 +384,43 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
   0%,100%{opacity:1;transform:scale(1)}
   50%{opacity:0.6;transform:scale(1.3)}
 }
-.lounge-status-text{font-size:0.72rem;color:var(--text-2);font-weight:500}
-.lounge-body{padding:1.25rem;max-width:640px;margin:0 auto}
+.lounge-status-text{font-size:0.7rem;color:var(--text-2);font-weight:500}
+.lounge-body{max-width:640px;margin:0 auto}
+/* Post a connection CTA */
+.lounge-post-cta{
+  display:flex;align-items:center;justify-content:center;gap:0.5rem;
+  width:100%;padding:0.85rem 1.25rem;
+  background:var(--gold);color:#0b0a09;
+  font-weight:700;font-size:0.9rem;letter-spacing:0.03em;
+  border:none;cursor:pointer;
+  transition:opacity 0.15s;
+}
+.lounge-post-cta:active{opacity:0.82;}
+/* Live posts on landing */
+.lounge-posts-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.85rem 1.25rem 0.5rem;
+}
+.lounge-posts-header-label{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.18em;color:var(--text-3);font-weight:600}
+.lounge-see-all{font-size:0.78rem;color:var(--gold);background:none;border:none;cursor:pointer;padding:0}
+/* Compact post row for landing */
+.lounge-post-row{
+  padding:0.85rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  transition:background 150ms;
+}
+.lounge-post-row:active{background:var(--bg-2);}
+.lounge-post-row-top{display:flex;align-items:baseline;justify-content:space-between;gap:0.5rem;margin-bottom:0.25rem}
+.lounge-post-row-title{font-size:0.9rem;font-weight:600;color:var(--text-1);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lounge-post-row-time{font-size:0.7rem;color:var(--text-3);flex-shrink:0}
+.lounge-post-row-body{font-size:0.8rem;color:var(--text-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4}
+.lounge-post-row-tag{display:inline-block;font-size:0.62rem;color:var(--gold);background:rgba(200,164,90,0.12);border-radius:4px;padding:0.1rem 0.4rem;margin-top:0.35rem}
+.lounge-empty{
+  padding:2.5rem 1.25rem;text-align:center;
+  color:var(--text-3);font-size:0.88rem;
+  font-family:var(--font-display);font-style:italic;
+}
 .lounge-section{margin-bottom:2rem}
 .lounge-section-label{
   display:flex;align-items:center;justify-content:space-between;
@@ -949,8 +983,7 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
         <img src="assets/gramophone-gold.png" alt="The Roxy">
       </div>
       <div class="lounge-hero-venue">The Roxy Encinitas</div>
-      <div class="lounge-hero-title">The Lounge</div>
-      <div class="lounge-hero-sub">Where the night begins</div>
+      <div class="lounge-hero-title">Missed Connections</div>
       <div class="lounge-status-bar">
         <div class="lounge-status-dot"></div>
         <span class="lounge-status-text" id="lounge-live-text">Live tonight</span>
@@ -959,80 +992,20 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
 
     <div class="lounge-body">
 
-      <!-- CTA BUTTONS -->
-      <div class="lounge-cta-bar">
-        <button class="lounge-cta-btn" onclick="showView('feed')">
-          <div class="lounge-cta-btn-left">
-            <div class="lounge-cta-btn-label">Missed Connections</div>
-            <div class="lounge-cta-btn-title">See who's looking for you</div>
-          </div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
-        <button class="lounge-cta-btn" onclick="showView('discover')">
-          <div class="lounge-cta-btn-left">
-            <div class="lounge-cta-btn-label">Discover</div>
-            <div class="lounge-cta-btn-title">Find your vibe tonight</div>
-          </div>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
+      <!-- PRIMARY CTA -->
+      <button class="lounge-post-cta" onclick="openNewPostModal()">
+        + Post a Missed Connection
+      </button>
+
+      <!-- LIVE POSTS HEADER -->
+      <div class="lounge-posts-header">
+        <span class="lounge-posts-header-label">Tonight's Connections</span>
+        <button class="lounge-see-all" onclick="showView('feed')">See all →</button>
       </div>
 
-      <!-- TONIGHT AT THE ROXY -->
-      <div class="lounge-section">
-        <div class="lounge-section-label">
-          <span class="t-label">Tonight at The Roxy</span>
-        </div>
-        <div id="lounge-events-list">
-          <div class="tonight-card">
-            <div class="tonight-card-type">Live Music</div>
-            <div class="tonight-card-title">Doors open — come as you are</div>
-            <div class="tonight-card-detail">Encinitas · 1021 N. Vulcan Ave · All ages welcome</div>
-          </div>
-          <div class="tonight-card">
-            <div class="tonight-card-type">Happy Hour</div>
-            <div class="tonight-card-title">Craft cocktails &amp; good conversation</div>
-            <div class="tonight-card-detail">Post a missed connection. Someone's looking for you.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VIBE CHECK -->
-      <div class="lounge-section">
-        <div class="lounge-section-label">
-          <span class="t-label">Tonight's Vibe</span>
-        </div>
-        <div class="lounge-vibe-grid">
-          <div class="vibe-tile" onclick="showView('feed');setFilter('music_lover')">
-            <div class="vibe-emoji">🎸</div>
-            <div class="vibe-label">Music</div>
-          </div>
-          <div class="vibe-tile" onclick="showView('feed');setFilter('missed_connection')">
-            <div class="vibe-emoji">✨</div>
-            <div class="vibe-label">Missed</div>
-          </div>
-          <div class="vibe-tile" onclick="showView('feed');setFilter('looking_to_meet')">
-            <div class="vibe-emoji">👀</div>
-            <div class="vibe-label">Looking</div>
-          </div>
-          <div class="vibe-tile" onclick="showView('feed');setFilter('event_buddy')">
-            <div class="vibe-emoji">🎉</div>
-            <div class="vibe-label">Events</div>
-          </div>
-          <div class="vibe-tile" onclick="showView('feed');setFilter('just_saying_hi')">
-            <div class="vibe-emoji">👋</div>
-            <div class="vibe-label">Say Hi</div>
-          </div>
-          <div class="vibe-tile" onclick="openNewPostModal()">
-            <div class="vibe-emoji">✍️</div>
-            <div class="vibe-label">Post</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- QUOTE -->
-      <div class="lounge-quote">
-        <div class="lounge-quote-text">"You saw each other for a moment. Make it last longer."</div>
-        <div class="lounge-quote-attr">— Roxy Missed Connections</div>
+      <!-- LIVE POSTS LIST -->
+      <div id="lounge-posts-list">
+        <div class="lounge-empty">Loading tonight's connections…</div>
       </div>
 
     </div>
@@ -1729,18 +1702,56 @@ async function skipOnboard() {
 
 // ─── HOME / LOUNGE ────────────────────────────────────────────
 function initLounge() {
-  const liveText = document.getElementById('lounge-live-text');
-  if (!liveText) return;
-  fetch(`${SUPABASE_URL}/rest/v1/posts?is_active=eq.true&select=id`, {
-    headers: { 'apikey': SUPABASE_KEY }
-  })
-  .then(r => r.json())
-  .then(rows => {
-    const count = Array.isArray(rows) ? rows.length : 0;
-    if (count === 0) liveText.textContent = 'Be the first to post tonight';
-    else liveText.textContent = `${count} missed connection${count !== 1 ? 's' : ''} tonight`;
-  })
-  .catch(() => { liveText.textContent = 'Live tonight'; });
+  renderLoungePosts();
+}
+
+async function renderLoungePosts() {
+  const container = document.getElementById('lounge-posts-list');
+  const liveText  = document.getElementById('lounge-live-text');
+  if (!container) return;
+
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/posts?is_active=eq.true&select=id,title,body,category,created_at&order=created_at.desc&limit=10`,
+      { headers: { 'apikey': SUPABASE_KEY } }
+    );
+    const posts = await res.json();
+
+    if (liveText) {
+      const count = Array.isArray(posts) ? posts.length : 0;
+      liveText.textContent = count === 0
+        ? 'Be the first to post tonight'
+        : `${count} connection${count !== 1 ? 's' : ''} tonight`;
+    }
+
+    if (!Array.isArray(posts) || posts.length === 0) {
+      container.innerHTML = `<div class="lounge-empty">No missed connections yet tonight.<br>Be the first to post.</div>`;
+      return;
+    }
+
+    const CAT_LABELS = {
+      missed_connection:'Missed Connection',looking_to_meet:'Looking to Meet',
+      just_saying_hi:'Just Saying Hi',event_buddy:'Event Buddy',music_lover:'Music Lover',other:'Other'
+    };
+
+    container.innerHTML = posts.map(p => {
+      const label = CAT_LABELS[p.category] || p.category || '';
+      const ago   = timeAgo(p.created_at);
+      const title = esc(p.title || '');
+      const body  = esc(p.body  || '');
+      return `<div class="lounge-post-row" onclick="openPost('${p.id}')">
+        <div class="lounge-post-row-top">
+          <div class="lounge-post-row-title">${title}</div>
+          <div class="lounge-post-row-time">${ago}</div>
+        </div>
+        <div class="lounge-post-row-body">${body}</div>
+        ${label ? `<div class="lounge-post-row-tag">${label}</div>` : ''}
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    container.innerHTML = `<div class="lounge-empty">Couldn't load posts right now.</div>`;
+  }
 }
 
 // ─── FEED ─────────────────────────────────────────────────────
