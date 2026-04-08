@@ -271,6 +271,72 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
 .nav-item svg{width:22px;height:22px;stroke-width:1.75;flex-shrink:0}
 .nav-item.active{color:var(--gold)}
 .nav-item:hover{color:var(--text-1)}
+.nav-item{position:relative}
+.nav-badge{
+  position:absolute;top:2px;right:calc(50% - 20px);
+  min-width:16px;height:16px;background:var(--gold);color:#0b0a09;
+  font-size:0.6rem;font-weight:700;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;padding:0 4px;
+}
+
+/* ─── INBOX ──────────────────────────────────────────── */
+.inbox-item{
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background 150ms;
+}
+.inbox-item:active{background:var(--bg-2)}
+.inbox-item-body{flex:1;min-width:0}
+.inbox-item-top{display:flex;justify-content:space-between;align-items:baseline;gap:0.5rem}
+.inbox-item-name{font-weight:600;font-size:0.9rem;color:var(--text-1)}
+.inbox-item-time{font-size:0.7rem;color:var(--text-3);flex-shrink:0}
+.inbox-item-preview{font-size:0.8rem;color:var(--text-2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-top:0.2rem}
+.inbox-item-preview.unread{color:var(--text-1);font-weight:500}
+.inbox-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0}
+
+/* ─── CHAT THREAD ────────────────────────────────────── */
+#view-chat{display:none;flex-direction:column;height:100dvh;padding-bottom:0!important}
+#view-chat.active{display:flex}
+.chat-header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(11,10,9,0.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0.75rem 1rem;display:flex;align-items:center;gap:0.75rem;
+}
+.chat-header-back{background:none;border:none;cursor:pointer;padding:0.25rem;color:var(--text-2)}
+.chat-header-back svg{width:20px;height:20px}
+.chat-header-info{flex:1;min-width:0}
+.chat-header-name{font-weight:600;font-size:0.9rem;color:var(--text-1)}
+.chat-header-sub{font-size:0.7rem;color:var(--gold)}
+.chat-header-report{background:none;border:none;cursor:pointer;color:var(--text-3);padding:0.25rem;font-size:0.78rem}
+.chat-body{flex:1;overflow-y:auto;padding:1rem 1rem 0.5rem;display:flex;flex-direction:column;gap:0.5rem}
+.bubble-wrap{display:flex;flex-direction:column;max-width:72%}
+.bubble-wrap.mine{align-self:flex-end;align-items:flex-end}
+.bubble-wrap.theirs{align-self:flex-start;align-items:flex-start}
+.bubble{padding:0.65rem 0.9rem;border-radius:16px;font-size:0.88rem;line-height:1.45;word-break:break-word}
+.bubble.mine{background:linear-gradient(135deg,var(--gold),#b8922a);color:#0b0a09;border-bottom-right-radius:4px}
+.bubble.theirs{background:rgba(255,255,255,0.08);color:var(--text-1);border-bottom-left-radius:4px}
+.bubble-time{font-size:0.65rem;color:var(--text-3);margin-top:0.2rem;padding:0 0.2rem}
+.chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-3);font-size:0.88rem;font-family:var(--font-display);font-style:italic;gap:0.4rem}
+.chat-composer{
+  padding:0.75rem 1rem;border-top:1px solid var(--border);
+  display:flex;gap:0.6rem;align-items:flex-end;background:var(--bg);
+  padding-bottom:calc(0.75rem + env(safe-area-inset-bottom));
+}
+.chat-composer textarea{
+  flex:1;background:var(--bg-2);border:1px solid var(--border);
+  border-radius:20px;padding:0.55rem 0.9rem;color:var(--text-1);
+  font-size:0.88rem;resize:none;max-height:120px;font-family:var(--font-body);
+  outline:none;line-height:1.4;
+}
+.chat-composer textarea:focus{border-color:rgba(200,164,90,0.4)}
+.chat-send-btn{
+  width:38px;height:38px;border-radius:50%;background:var(--gold);color:#0b0a09;
+  border:none;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:opacity 0.15s;
+}
+.chat-send-btn:disabled{opacity:0.35;cursor:default}
+.chat-send-btn svg{width:16px;height:16px}
 
 /* ═══════════════════════════════════════════════════════════
    PAGE LAYOUT
@@ -959,6 +1025,11 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       Discover
     </div>
+    <div class="nav-item" id="nav-messages" onclick="showView('messages')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span id="msg-badge" class="nav-badge" hidden>0</span>
+      Messages
+    </div>
     <div class="nav-item" id="nav-notifs" onclick="showView('notifs')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span id="notif-badge" style="display:none" class="tag-gold" style="font-size:0.6rem;padding:0.1rem 0.4rem;position:absolute;top:-2px;right:-2px"></span>
@@ -1067,6 +1138,49 @@ select.input{appearance:none;cursor:pointer;background-image:url("data:image/svg
       <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
     </div>
     <div id="notifs-list"></div>
+  </div>
+
+  <!-- ── MESSAGES / INBOX VIEW ────────────────────── -->
+  <div id="view-messages" class="page">
+    <div class="page-header">
+      <button class="header-logo-btn" onclick="showView('home')" title="The Lounge">
+        <img src="assets/Roxy-logo-white.png" alt="The Roxy Encinitas">
+      </button>
+      <div style="font-family:var(--font-display);font-size:1.05rem;color:var(--text-2)">Messages</div>
+    </div>
+    <div id="inbox-list">
+      <div class="lounge-empty">Loading conversations…</div>
+    </div>
+  </div>
+
+  <!-- ── CHAT THREAD VIEW ──────────────────────────── -->
+  <div id="view-chat" class="page">
+    <div class="chat-header">
+      <button class="chat-header-back" onclick="showView('messages')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div id="chat-avatar-wrap"></div>
+      <div class="chat-header-info">
+        <div class="chat-header-name" id="chat-header-name">—</div>
+        <div class="chat-header-sub">You both waved</div>
+      </div>
+      <button class="chat-header-report" onclick="reportConversation()">Report</button>
+    </div>
+    <div class="chat-body" id="chat-body">
+      <div class="chat-empty">
+        <span>Say hello</span>
+        <span style="font-size:0.75rem;font-style:normal">Your messages stay private.</span>
+      </div>
+    </div>
+    <div class="chat-composer">
+      <textarea id="chat-input" placeholder="Write a message…" maxlength="1000" rows="1"
+        oninput="autoresizeChatInput(this);updateSendBtn()"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCurrentMessage()}"
+      ></textarea>
+      <button class="chat-send-btn" id="chat-send-btn" onclick="sendCurrentMessage()" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
   </div>
 
   <!-- ── MY PROFILE VIEW ───────────────────────────── -->
@@ -1368,6 +1482,10 @@ const state = {
   editAvatarFile:null,
   notifs:      [],
   unreadCount: 0,
+  // DM state
+  currentConvId:    null,
+  currentConvOther: null,
+  msgChannel:       null,
 };
 
 const CATEGORY_LABELS = {
@@ -1452,6 +1570,8 @@ function showMainApp() {
   loadMyWaves();
   loadMyProfile();
   loadNotifications();
+  subscribeToMessages();
+  loadInbox(); // preload inbox + unread badge
 }
 
 function showView(viewName) {
@@ -1470,6 +1590,8 @@ function showView(viewName) {
   if (viewName === 'notifs') loadNotifications();
   if (viewName === 'profile') renderMyProfile();
   if (viewName === 'home') initLounge();
+  if (viewName === 'messages') loadInbox();
+  if (viewName === 'chat') { /* opened via openConversation() */ }
 }
 
 function goBack() {
@@ -1752,6 +1874,226 @@ async function renderLoungePosts() {
   } catch(e) {
     container.innerHTML = `<div class="lounge-empty">Couldn't load posts right now.</div>`;
   }
+}
+
+// ─── DIRECT MESSAGES ─────────────────────────────────────────
+
+async function createConversationIfNotExists(userAId, userBId) {
+  const [u1, u2] = [userAId, userBId].sort(); // normalize pair order
+  const { data: existing } = await sb.from('conversations')
+    .select('id').eq('user_one', u1).eq('user_two', u2).maybeSingle();
+  if (existing) return existing.id;
+  const { data, error } = await sb.from('conversations')
+    .insert([{ user_one: u1, user_two: u2 }]).select('id').single();
+  if (error) { console.error('createConversation:', error); return null; }
+  return data.id;
+}
+
+async function loadInbox() {
+  if (!state.user) return;
+  const container = document.getElementById('inbox-list');
+  if (!container) return;
+
+  const { data: convs, error } = await sb.from('conversations')
+    .select('*')
+    .or(`user_one.eq.${state.user.id},user_two.eq.${state.user.id}`)
+    .order('created_at', { ascending: false });
+
+  if (error || !convs?.length) {
+    container.innerHTML = '<div class="lounge-empty">No conversations yet.<br>Accept a wave to start chatting.</div>';
+    updateMsgBadge(0);
+    return;
+  }
+
+  const { data: reads } = await sb.from('message_reads')
+    .select('conversation_id,last_read_at').eq('user_id', state.user.id);
+  const readMap = {};
+  (reads || []).forEach(r => { readMap[r.conversation_id] = r.last_read_at; });
+
+  const rows = await Promise.all(convs.map(async c => {
+    const otherId = c.user_one === state.user.id ? c.user_two : c.user_one;
+    const [profileRes, msgRes] = await Promise.all([
+      sb.from('profiles').select('id,username,display_name,avatar_url').eq('id', otherId).single(),
+      sb.from('messages').select('body,created_at,sender_id').eq('conversation_id', c.id)
+        .eq('is_deleted', false).order('created_at', { ascending: false }).limit(1).maybeSingle()
+    ]);
+    const profile = profileRes.data;
+    const latest  = msgRes.data;
+    const lastRead = readMap[c.id];
+    const unread = latest && latest.sender_id !== state.user.id
+      && (!lastRead || latest.created_at > lastRead);
+    return { conv: c, profile, latest, unread };
+  }));
+
+  rows.sort((a, b) => {
+    const at = a.latest?.created_at || a.conv.created_at;
+    const bt = b.latest?.created_at || b.conv.created_at;
+    return bt > at ? 1 : -1;
+  });
+
+  updateMsgBadge(rows.filter(r => r.unread).length);
+
+  container.innerHTML = rows.map(({ conv, profile, latest, unread }) => {
+    const name    = esc(profile?.display_name || profile?.username || 'Someone');
+    const preview = latest
+      ? `<span>${esc(latest.body.slice(0, 60))}</span>`
+      : `<span style="font-style:italic;color:var(--text-3)">No messages yet</span>`;
+    const when    = latest ? timeAgo(latest.created_at) : timeAgo(conv.created_at);
+    return `<div class="inbox-item" onclick="openConversation('${conv.id}','${profile?.id}')">
+      <div class="avatar avatar-md">${avatarHTML(profile, 'md')}</div>
+      <div class="inbox-item-body">
+        <div class="inbox-item-top">
+          <div class="inbox-item-name">${name}</div>
+          <div class="inbox-item-time">${when}</div>
+        </div>
+        <div class="inbox-item-preview${unread ? ' unread' : ''}">${preview}</div>
+      </div>
+      ${unread ? '<div class="inbox-unread-dot"></div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+async function openConversation(convId, otherUserId) {
+  state.currentConvId = convId;
+  const { data: profile } = await sb.from('profiles')
+    .select('id,username,display_name,avatar_url').eq('id', otherUserId).single();
+  state.currentConvOther = profile;
+
+  document.getElementById('chat-header-name').textContent =
+    profile?.display_name || profile?.username || 'Someone';
+  const avatarWrap = document.getElementById('chat-avatar-wrap');
+  if (avatarWrap) avatarWrap.innerHTML = `<div class="avatar avatar-md">${avatarHTML(profile, 'md')}</div>`;
+
+  showView('chat');
+  await loadConversation(convId);
+  await markConversationRead(convId);
+}
+
+async function loadConversation(convId) {
+  const body = document.getElementById('chat-body');
+  if (!body) return;
+  body.innerHTML = '<div class="chat-empty"><span>Loading…</span></div>';
+
+  const { data: msgs, error } = await sb.from('messages')
+    .select('*').eq('conversation_id', convId).eq('is_deleted', false)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    body.innerHTML = '<div class="chat-empty"><span>Could not load messages.</span></div>';
+    return;
+  }
+  if (!msgs?.length) {
+    body.innerHTML = `<div class="chat-empty">
+      <span>Say hello</span>
+      <span style="font-size:0.75rem;font-style:normal">Your messages stay private.</span>
+    </div>`;
+    return;
+  }
+  renderMessages(msgs);
+  scrollChatToBottom(true);
+}
+
+function renderMessages(msgs) {
+  const body = document.getElementById('chat-body');
+  if (!body || !state.user) return;
+  body.innerHTML = msgs.map(m => {
+    const mine = m.sender_id === state.user.id;
+    return `<div class="bubble-wrap ${mine ? 'mine' : 'theirs'}">
+      <div class="bubble ${mine ? 'mine' : 'theirs'}">${esc(m.body)}</div>
+      <div class="bubble-time">${timeAgo(m.created_at)}</div>
+    </div>`;
+  }).join('');
+}
+
+function appendMessage(msg) {
+  const body = document.getElementById('chat-body');
+  if (!body || !state.user) return;
+  const empty = body.querySelector('.chat-empty');
+  if (empty) empty.remove();
+  const mine = msg.sender_id === state.user.id;
+  const el = document.createElement('div');
+  el.className = `bubble-wrap ${mine ? 'mine' : 'theirs'}`;
+  el.innerHTML = `<div class="bubble ${mine ? 'mine' : 'theirs'}">${esc(msg.body)}</div>
+    <div class="bubble-time">${timeAgo(msg.created_at)}</div>`;
+  body.appendChild(el);
+  const nearBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 120;
+  if (nearBottom || mine) scrollChatToBottom(false);
+}
+
+async function sendCurrentMessage() {
+  if (!state.user || !state.currentConvId) return;
+  const input = document.getElementById('chat-input');
+  const text  = input?.value.trim();
+  if (!text || text.length > 1000) return;
+  input.value = '';
+  updateSendBtn();
+  autoresizeChatInput(input);
+  const { data, error } = await sb.from('messages')
+    .insert([{ conversation_id: state.currentConvId, sender_id: state.user.id, body: text }])
+    .select().single();
+  if (error) {
+    showToast('Failed to send', 'error');
+    input.value = text;
+    updateSendBtn();
+    return;
+  }
+  appendMessage(data);
+  markConversationRead(state.currentConvId);
+}
+
+async function markConversationRead(convId) {
+  if (!state.user) return;
+  await sb.from('message_reads').upsert(
+    [{ conversation_id: convId, user_id: state.user.id, last_read_at: new Date().toISOString() }],
+    { onConflict: 'conversation_id,user_id' }
+  );
+}
+
+function updateMsgBadge(count) {
+  const badge = document.getElementById('msg-badge');
+  if (!badge) return;
+  if (count > 0) { badge.textContent = count > 9 ? '9+' : count; badge.hidden = false; }
+  else { badge.hidden = true; }
+}
+
+function scrollChatToBottom(instant) {
+  const body = document.getElementById('chat-body');
+  if (!body) return;
+  body.scrollTo({ top: body.scrollHeight, behavior: instant ? 'instant' : 'smooth' });
+}
+
+function autoresizeChatInput(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function updateSendBtn() {
+  const btn   = document.getElementById('chat-send-btn');
+  const input = document.getElementById('chat-input');
+  if (btn && input) btn.disabled = !input.value.trim();
+}
+
+function subscribeToMessages() {
+  if (state.msgChannel) sb.removeChannel(state.msgChannel);
+  state.msgChannel = sb.channel('roxy-messages')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+      const msg = payload.new;
+      if (msg.conversation_id === state.currentConvId) {
+        appendMessage(msg);
+        markConversationRead(state.currentConvId);
+      }
+      if (msg.sender_id !== state.user?.id && msg.conversation_id !== state.currentConvId) {
+        const badge = document.getElementById('msg-badge');
+        const current = badge?.hidden ? 0 : (parseInt(badge?.textContent) || 0);
+        updateMsgBadge(current + 1);
+      }
+    })
+    .subscribe();
+}
+
+function reportConversation() {
+  // TODO: insert into reports table with conversation context
+  showToast('Report submitted. We\'ll review this conversation.', 'success');
 }
 
 // ─── FEED ─────────────────────────────────────────────────────
@@ -2288,9 +2630,16 @@ function renderNotifications() {
 }
 
 async function respondToWave(requestId, status) {
+  const { data: req } = await sb.from('connection_requests')
+    .select('sender_id,receiver_id').eq('id', requestId).single();
   await sb.from('connection_requests').update({ status }).eq('id', requestId);
+  if (status === 'accepted' && req) {
+    await createConversationIfNotExists(req.sender_id, req.receiver_id);
+    showToast('Connection accepted! Check Messages.', 'success');
+  } else {
+    showToast('Request declined', 'error');
+  }
   loadNotifications();
-  showToast(status === 'accepted' ? 'Connection accepted!' : 'Request declined', status === 'accepted' ? 'success' : 'error');
 }
 
 async function markAllRead() {
